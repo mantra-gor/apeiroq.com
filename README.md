@@ -1,10 +1,10 @@
 # Apeiroq.com - Main Website & Portfolio
 
-This is the private repository for the main website and portfolio of [ApeiroQ](https://apeiroq.com).
+This is the private repository for the main website and portfolio of [Apeiroq](https://apeiroq.com).
 
 ## 🔒 Confidentiality Notice
 
-**This repository is private and confidential.** It is shared exclusively with the ApeiroQ company team. Unauthorized access, distribution, or reproduction of the code is strictly prohibited.
+**This repository is private and confidential.** It is shared exclusively with the Apeiroq company team. Unauthorized access, distribution, or reproduction of the code is strictly prohibited.
 
 ## 🛠️ Tech Stack
 
