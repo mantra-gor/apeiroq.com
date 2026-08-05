@@ -21,7 +21,7 @@ Most modern teams use agile development methodologies. Instead of building an en
 Then the tech stacks we work on:
 Frontend: Reactjs, Nextjs, Svelte, Alpine.js, Redux. 
 
-Backend: Nodejs, Expressjs, Laravel, FilamentPhp, Nestjs, Typescript, GoLang, SpringBoot Java.
+Backend: Nodejs, Expressjs, Laravel, FilamentPhp, Nestjs, Typescript, GoLang, SpringBoot Java, Python Django and FastAPI.
 
 App: Native Android Java/Kotlin, Native iOS SwiftUI, Flutter, ReactNative, Electron Based Desktop apps.
 

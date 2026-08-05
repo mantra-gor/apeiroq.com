@@ -1,21 +1,45 @@
 import { Hero } from "@/components/sections/hero";
+import { WhatWeDo } from "@/components/sections/what-we-do";
+import { HowWeWork } from "@/components/sections/how-we-work";
+import { CaseStudies } from "@/components/sections/case-studies";
+import { TechStack } from "@/components/sections/tech-stack";
+import { Testimonials } from "@/components/sections/testimonials";
+import { Newsletter } from "@/components/sections/newsletter";
+import { ClosingCta } from "@/components/sections/closing-cta";
 
 /**
- * Home. Section order is fixed by DESIGN.md §11 — build them in this order:
+ * Home. Section order follows DESIGN.md §11, with the tech stack added between
+ * the work and the client proof.
  *
- *   1. Hero                  done
- *   2. Trust bar             TODO — 3 real client logos + country caption
- *   3. What we build         TODO — 4 capability disclosure cards (§2 #3)
- *   4. Products & prototypes TODO — work cards in a scroll-snap rail (§2 #2,#6)
- *   5. How we work           TODO — numbered process timeline (§2 #4)
- *   6. Testimonials          TODO — 3 real quotes + location pills (§2 #8)
- *   7. The team              TODO — 12 engineers, distributed
- *   8. Newsletter            TODO — section version of the footer form
- *   9. Closing CTA           TODO — dark, single primary action
+ * Canvases alternate — dark, light, tint, light, dark, light, tint, dark — so
+ * the page has rhythm without a third surface being invented.
  *
- * Sections 2, 4 and 6 are blocked on real content (logos, screenshots, quotes).
- * Do not scaffold them with placeholder companies or invented metrics.
+ * Two sections render nothing until their content files are filled in:
+ *
+ *   CaseStudies   content/projects.ts       — real screenshots and outcomes
+ *   Testimonials  content/testimonials.ts   — three attributed, permitted quotes
+ *
+ * That is deliberate. Scaffolding them with placeholder companies or invented
+ * metrics is the one thing CLAUDE.md rules out absolutely, and filler ships.
+ *
+ * Still blocked on assets, not built: the trust bar (§11 §2, needs 3 real
+ * client logos) and the team strip (§11 §7, needs a real photo).
+ *
+ * Metadata: the root layout already owns this route's title, description and
+ * canonical, plus Organization + WebSite JSON-LD. Home is not nested, so there
+ * is no BreadcrumbList to add.
  */
 export default function HomePage() {
-  return <Hero />;
+  return (
+    <>
+      <Hero />
+      <WhatWeDo />
+      <HowWeWork />
+      <CaseStudies />
+      <TechStack />
+      <Testimonials />
+      <Newsletter />
+      <ClosingCta />
+    </>
+  );
 }

@@ -143,19 +143,23 @@ Two brand colors. Everything else is a derived neutral.
 
 ### Accent — "Ember"
 
-| Token | Hex | Contrast |
-| --- | --- | --- |
-| `--ember` | `#E76F3C` | 5.6:1 on `--ink` ✅ · 3.1:1 on white ⚠️ |
+The name is historical — the accent is green. It kept its token name so nothing downstream had to be renamed.
 
-A single warm accent, pulled from the ink's own hue family so it never reads as bolted on.
+| Token | Hex | On `--ink` | On white |
+| --- | --- | --- | --- |
+| `--ember` | `#38B000` | 6.2:1 ✅ | 2.8:1 ❌ |
+| `--ember-strong` | `#2E9000` | 4.2:1 ✅ | 4.2:1 ✅ |
 
-**Budget: Ember covers ≤5% of any viewport.** Permitted uses only:
+A single accent. `--ember` is the brand colour and the one anybody sees as colour; `--ember-strong` is the same hue darkened, and exists purely to satisfy contrast where `--ember` cannot.
 
-- Primary CTA fill (with `--ink` text on it) and CTA hover states
-- `:focus-visible` ring (3px, 2px offset) — everywhere, non-negotiable
-- Small signal marks: active nav underline, list bullets, the dot in a status pill, a 1px underline on an inline link
+**Which one to use:**
 
-**Forbidden:** Ember as body text on white (fails AA), Ember gradients, Ember backgrounds larger than a button, more than one Ember element per viewport section.
+- **`--ember`** — primary CTA fill (with `--ink` text on it, 6.2:1), CTA hover states, and small signal marks *on a dark canvas*: list bullets, the dot in a status pill, an active nav underline.
+- **`--ember-strong`** — the `:focus-visible` ring everywhere (3px, 2px offset). It is the only one of the two that clears the 3:1 WCAG 1.4.11 floor against *both* canvases, and one ring colour sitewide beats scoping the ring per section. Also any accent hairline or border that lands on a light canvas, where `--ember` is 2.8:1 and fails.
+
+**Budget: the accent covers ≤5% of any viewport.** That budget is why the Home hero's pixel field is white rather than green — a full-viewport green field would blow it and steal the signal from the CTA.
+
+**Forbidden:** either green as body text on white (`--ember` fails outright; `--ember-strong` at 4.2:1 still misses the 4.5:1 AA floor, so error text uses `--ink` and the *words* carry the state — never colour alone). No accent gradients, no accent background larger than a button, no more than one accent element per viewport section.
 
 If a section looks like it needs more color, it needs more space instead.
 
@@ -189,7 +193,8 @@ Tailwind v4 has no `tailwind.config.js`. Declare tokens in `app/globals.css` und
   --color-ink-100: #ede9e7;
   --color-ink-050: #f7f5f4;
   --color-paper: #ffffff;
-  --color-ember: #e76f3c;
+  --color-ember: #38b000;
+  --color-ember-strong: #2e9000;
 
   --font-sans: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
 
@@ -454,9 +459,9 @@ Target: **100 / 100 / 100 / 100** on mobile Lighthouse. Treat these as build gat
 **Accessibility (all required for the 100)**
 
 - Skip-to-content link, first focusable element.
-- Visible `:focus-visible` ring everywhere: `3px solid var(--color-ember)`, `outline-offset: 2px`. Never `outline: none` without a replacement.
+- Visible `:focus-visible` ring everywhere: `3px solid var(--color-ember-strong)`, `outline-offset: 2px`. Never `outline: none` without a replacement. It is `--ember-strong`, not `--ember`, because only the darkened green clears 3:1 on both canvases — see §4.
 - Semantic landmarks (`header`/`nav`/`main`/`footer`), one `<h1>` per page, no heading levels skipped.
-- Contrast: body text ≥4.5:1, large text and UI borders ≥3:1. `--ink-400` is large-text-only. Ember is never body text on white.
+- Contrast: body text ≥4.5:1, large text and UI borders ≥3:1. `--ink-400` is large-text-only. Neither green is ever body text — including error text, which uses `--ink` and states the problem in words.
 - Decorative video/canvas: `aria-hidden="true"`, not focusable. Zero autoplaying audio.
 - Every form input has a `<label>`; errors are text (not color alone) and announced via `aria-live`.
 - Full keyboard operability including the mobile menu (focus trap + Esc to close).
@@ -520,7 +525,9 @@ It ranks for commercial-intent queries, gives the nav CTA a destination with roo
 
 ### Home — section order
 
-1. **Hero** — full-bleed background video under scrim. H1: **Scale Beyond Limits**. Lede: one sentence naming custom software for international clients. Two CTAs: *Hire Us* (Ember) + *See our work*.
+1. **Hero** — full-bleed **pixel field** (React Bits PixelBlast, stripped; see §7). H1: **Scale Beyond Limits**. Lede: one sentence naming custom software for international clients. Two CTAs: *Hire Us* (Ember) + *See our work*.
+
+   The field replaces the background video §8 describes — one ambient treatment, not both — but inherits the whole §8 contract: a CSS pixel grid is painted in the server HTML and is what the LCP measures, the canvas mounts on idle after first paint, and it is skipped entirely under `prefers-reduced-motion`, save-data, 2G, or below 768px. It is masked out above the headline so the copy always sits on opaque ink.
 2. **Trust bar** — "Trusted by teams building at" + 3 client logos, generous size, country in caption type under each (§2 #10). No fake grid padding, no marquee at three logos.
 3. **What we build** — 3–4 capability cards (custom platforms, product engineering, integrations, cloud & scale). Plain language, no icon soup.
 4. **Products & prototypes** — the strongest section. Our 3–4 prototypes as work cards (§2 #2) in a scroll-snap rail (§2 #6), each honestly framed: *"Built as a product thesis. Customized and shipped for [client]."* This turns a small portfolio into evidence of independent product thinking, which is rarer than contract delivery. Where a client outcome is publishable, attach an outcome stat (§2 #5).

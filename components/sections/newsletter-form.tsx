@@ -29,10 +29,45 @@ function SubmitButton() {
 }
 
 /**
+ * Canvas-dependent styling only. The form's behaviour is identical on both —
+ * DESIGN.md §4 sanctions exactly two surfaces, so this is the whole matrix.
+ */
+const tones = {
+  dark: {
+    input:
+      "border-white/15 text-paper placeholder:text-white/40 hover:border-white/25 focus:border-white/40",
+    // 6.2:1 on ink — clears the 3:1 floor for a UI boundary.
+    errorBorder: "border-ember",
+    status: "text-white/70",
+    // Errors read as text, never colour alone. Full-strength ink/paper rather
+    // than an ember tint, because neither green clears 4.5:1 on both canvases.
+    errorStatus: "text-paper",
+    privacy: "text-white/45",
+  },
+  light: {
+    input:
+      "border-ink-200 text-ink placeholder:text-ink-400 hover:border-ink-300 focus:border-ink-500",
+    // Plain ember is 2.8:1 on paper and would fail; the darkened one is 4.2:1.
+    errorBorder: "border-ember-strong",
+    status: "text-ink-500",
+    errorStatus: "text-ink",
+    privacy: "text-ink-500",
+  },
+} as const;
+
+/**
  * Email only — every extra field costs conversions (DESIGN.md §12).
  * Honeypot + timing check instead of a CAPTCHA, which would be third-party JS.
  */
-export function NewsletterForm({ className }: { className?: string }) {
+export function NewsletterForm({
+  className,
+  tone = "dark",
+}: {
+  className?: string;
+  /** The canvas this sits on. Footer is dark; the Home section is light. */
+  tone?: keyof typeof tones;
+}) {
+  const styles = tones[tone];
   const [state, formAction] = useActionState(
     subscribeToNewsletter,
     initialNewsletterState,
@@ -75,10 +110,9 @@ export function NewsletterForm({ className }: { className?: string }) {
             className={cn(
               // pr clears the absolutely-positioned Subscribe button.
               "h-14 w-full rounded-full border bg-transparent pl-5 pr-44 text-body",
-              "border-white/15 text-paper placeholder:text-white/40",
-              "transition-colors duration-160 ease-standard",
-              "hover:border-white/25 focus:border-white/40 focus:outline-none",
-              state.status === "error" && "border-ember",
+              "transition-colors duration-160 ease-standard focus:outline-none",
+              styles.input,
+              state.status === "error" && styles.errorBorder,
             )}
           />
           <SubmitButton />
@@ -102,13 +136,13 @@ export function NewsletterForm({ className }: { className?: string }) {
         aria-live="polite"
         className={cn(
           "mt-3 min-h-5 px-5 text-caption",
-          state.status === "error" ? "text-ember" : "text-white/70",
+          state.status === "error" ? styles.errorStatus : styles.status,
         )}
       >
         {state.message}
       </p>
 
-      <p id="newsletter-privacy" className="px-5 text-caption text-white/45">
+      <p id="newsletter-privacy" className={cn("px-5 text-caption", styles.privacy)}>
         One letter a month. No pitches. Unsubscribe in one click.
       </p>
     </div>

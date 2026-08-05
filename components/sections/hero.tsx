@@ -1,14 +1,18 @@
 import { Arrow } from "@/components/ui/arrow";
 import { ButtonLink } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { HeroBackdrop } from "@/components/sections/hero-backdrop";
 import { primaryCta } from "@/lib/site";
 
 /**
- * Home hero. DESIGN.md §11 — full-bleed media under a scrim, one H1, two CTAs.
+ * Home hero. DESIGN.md §11 — full-bleed media, one H1, two CTAs.
  *
- * TODO: add the background video (Pexels/Pixabay, teams working / code) per
- * DESIGN.md §8. The poster image must be the LCP element and the <video> must
- * mount post-paint on idle — do not add a <video> here without that wrapper.
+ * The backdrop is a pixel field rather than the background video §8 describes:
+ * one ambient treatment, not both. Everything §8 asks of the video still holds
+ * for it — mounts post-paint, never the LCP element, skipped under
+ * reduced-motion / save-data / 2G / small viewports. See HeroBackdrop.
+ *
+ * This component stays a Server Component. Only the backdrop is client-side.
  */
 export function Hero() {
   return (
@@ -19,9 +23,7 @@ export function Hero() {
       */}
       <div id="hero-sentinel" aria-hidden="true" className="absolute top-0 h-6 w-full" />
 
-      {/* Placeholder backdrop until the video lands. */}
-      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-ink" />
-      <div aria-hidden="true" className="scrim absolute inset-0 -z-10" />
+      <HeroBackdrop />
 
       <Container className="pb-20 pt-40 md:pb-28">
         <p className="text-overline uppercase text-white/50">

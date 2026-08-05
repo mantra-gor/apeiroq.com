@@ -3,6 +3,7 @@ import { Sora } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { SmoothScroll } from "@/components/layout/smooth-scroll";
 import { JsonLd, organizationSchema, websiteSchema } from "@/lib/schema";
 import { siteConfig } from "@/lib/site";
 
@@ -64,6 +65,7 @@ export default function RootLayout({
           Skip to content
         </a>
 
+        <SmoothScroll />
         <Header />
         <main id="main" className="flex-1">
           {children}

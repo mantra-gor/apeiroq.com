@@ -19,6 +19,12 @@
   --color-ink-050: #f7f5f4;
   --color-paper: #ffffff;
   --color-ember: #38b000;
+  /*
+   * Same hue, darkened for use against white. --color-ember is 6.2:1 on --ink
+   * (buttons, dark canvases) but only 2.8:1 on paper, which is under the 3:1
+   * WCAG 1.4.11 floor for a focus indicator. Light canvases use this instead.
+   */
+  --color-ember-strong: #2e9000;
 
   /* Type — Sora only. Variable font, wght 100-800, no italic. */
   --font-sans: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
@@ -86,6 +92,8 @@
 
   /* Keyframes */
   --animate-rise: rise 420ms var(--ease-out-expo) both;
+  /* Hero canvas arrival — no pop when the WebGL field mounts post-paint. */
+  --animate-fade-in: fade-in 600ms var(--ease-standard) both;
 
   @keyframes rise {
     from {
@@ -97,6 +105,15 @@
       transform: none;
     }
   }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 }
 
 @layer base {
@@ -105,6 +122,17 @@
     /* Sticky header is 72px — keep anchor targets clear of it. */
     scroll-padding-top: 5.5rem;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  /*
+   * Set by SmoothScroll once locomotive-scroll is actually running. CSS smooth
+   * scrolling and Lenis both animate programmatic jumps, and together an anchor
+   * link visibly animates twice. The attribute only appears after the library
+   * loads, so with JS off — or if it never loads — native smoothing still
+   * applies.
+   */
+  html[data-lenis="on"] {
+    scroll-behavior: auto;
   }
 
   body {
@@ -126,9 +154,14 @@
     text-wrap: pretty;
   }
 
-  /* Ember focus ring, everywhere. Never remove without a replacement. */
+  /*
+   * Ember focus ring, everywhere. Never remove without a replacement.
+   * Uses the darkened ember: it clears 3:1 against both canvases (4.2:1 on
+   * paper, 4.2:1 on ink), where --color-ember itself fails on paper at 2.8:1.
+   * One token for both surfaces beats scoping the ring per section.
+   */
   :focus-visible {
-    outline: 3px solid var(--color-ember);
+    outline: 3px solid var(--color-ember-strong);
     outline-offset: 2px;
     border-radius: 2px;
   }
@@ -207,6 +240,73 @@ body:has(#hero-sentinel) [data-header][data-condensed="false"] [data-logo="ink"]
       rgb(27 25 24 / 0.62) 45%,
       rgb(27 25 24 / 0.92) 100%
     );
+  }
+
+  /*
+   * Static pixel field. Painted in the server HTML underneath the WebGL hero
+   * backdrop, and the only thing shown on every path where the canvas is not
+   * allowed to mount — reduced motion, save-data, 2G, small viewports, JS off.
+   * Costs nothing, so the hero is never a flat void and there is no pop-in.
+   *
+   * Two crossed stripe masks intersect into a grid of blocks; the colour comes
+   * from the gradients underneath, which also do the edge falloff. Where
+   * mask-composite is unsupported the layers union into a lattice of hairlines
+   * instead of blocks — a graceful difference, not a broken one.
+   */
+  .pixel-field {
+    background-image:
+      radial-gradient(105% 70% at 50% -8%, rgb(255 255 255 / 0.34) 0%, transparent 64%),
+      radial-gradient(60% 50% at 84% 18%, rgb(255 255 255 / 0.18) 0%, transparent 74%);
+    -webkit-mask-image:
+      repeating-linear-gradient(to right, #000 0 4px, transparent 4px 8px),
+      repeating-linear-gradient(to bottom, #000 0 4px, transparent 4px 8px),
+      linear-gradient(to bottom, #000 0 42%, transparent 80%);
+    mask-image:
+      repeating-linear-gradient(to right, #000 0 4px, transparent 4px 8px),
+      repeating-linear-gradient(to bottom, #000 0 4px, transparent 4px 8px),
+      linear-gradient(to bottom, #000 0 42%, transparent 80%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+
+  /*
+   * The same bottom falloff, applied to the WebGL canvas wrapper.
+   *
+   * This is a contrast requirement, not styling. The hero headline is --paper
+   * on --ink (15.9:1), but a lit pixel sitting behind it drags the local
+   * background up to roughly 2.9:1, which fails AA. Fading the field out above
+   * the text guarantees the copy always sits on opaque ink, whatever the shader
+   * happens to be drawing that frame.
+   */
+  .field-fade {
+    -webkit-mask-image: linear-gradient(to bottom, #000 0 42%, transparent 80%);
+    mask-image: linear-gradient(to bottom, #000 0 42%, transparent 80%);
+  }
+
+  /*
+   * Section entrance. DESIGN.md §7: fade + 16px rise, once, never on
+   * scroll-back. The Reveal component flips data-revealed via
+   * IntersectionObserver and then unobserves.
+   */
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 420ms var(--ease-out-expo) var(--reveal-delay, 0ms),
+      transform 420ms var(--ease-out-expo) var(--reveal-delay, 0ms);
+  }
+
+  .reveal[data-revealed="true"] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Nothing may depend on JS to become visible. */
+  @media (scripting: none) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+    }
   }
 
   /* Horizontal work rail — CSS scroll-snap, no JS carousel. DESIGN.md §2 #6. */

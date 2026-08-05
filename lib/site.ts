@@ -12,9 +12,9 @@ export const siteConfig = {
   // TODO: confirm production domain before launch.
   url: "https://apeiroq.com",
   description:
-    "Apeiroq builds custom software for international clients. A remote team of 12 engineers — no bench, no handoffs, direct access to the people writing the code.",
+    "Apeiroq builds custom software for global businesses. Our focused team of 12 engineers remote engineering team works directly with clients from day one, no bench, no layers of management, no handoffs. The people you speak with are the same people designing, building, and shipping your product.",
   // TODO: confirm the address this inbox routes to.
-  email: "hello@apeiroq.com",
+  email: "info@apeiroq.com",
   locale: "en",
 } as const;
 
