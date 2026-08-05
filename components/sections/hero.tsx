@@ -16,12 +16,16 @@ import { primaryCta } from "@/lib/site";
  */
 export function Hero() {
   return (
-    <section className="relative isolate flex min-h-[92svh] items-end overflow-hidden bg-ink text-paper">
+    <section className="relative isolate flex h-screen min -h-[92svh] items-end overflow-hidden bg-ink text-paper">
       {/*
         Marks the top of the dark hero. The header watches this to decide when
         to switch from transparent to solid — see globals.css and Header.
       */}
-      <div id="hero-sentinel" aria-hidden="true" className="absolute top-0 h-6 w-full" />
+      <div
+        id="hero-sentinel"
+        aria-hidden="true"
+        className="absolute top-0 h-6 w-full"
+      />
 
       <HeroBackdrop />
 
