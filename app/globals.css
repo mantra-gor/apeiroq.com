@@ -1,26 +1,238 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ---------------------------------------------------------------------------
+   Design tokens — see DESIGN.md §4 (color), §5 (type), §6 (space), §7 (motion).
+   Tailwind v4 is CSS-first: there is no tailwind.config.js. Add tokens here.
+   --------------------------------------------------------------------------- */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@theme {
+  /* Color — two brand colors, everything else derived. Warm ramp (hue ~20deg). */
+  --color-ink: #1b1918;
+  --color-ink-800: #262322;
+  --color-ink-700: #343130;
+  --color-ink-600: #4a4644;
+  --color-ink-500: #6b6664;
+  --color-ink-400: #918b88;
+  --color-ink-300: #b8b2af;
+  --color-ink-200: #d9d4d1;
+  --color-ink-100: #ede9e7;
+  --color-ink-050: #f7f5f4;
+  --color-paper: #ffffff;
+  --color-ember: #38b000;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Type — Sora only. Variable font, wght 100-800, no italic. */
+  --font-sans: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --text-display-xl: clamp(3.25rem, 7.5vw, 7rem);
+  --text-display-xl--line-height: 0.95;
+  --text-display-xl--letter-spacing: -0.035em;
+  --text-display-xl--font-weight: 600;
+
+  --text-display-l: clamp(2.5rem, 5vw, 4.5rem);
+  --text-display-l--line-height: 1;
+  --text-display-l--letter-spacing: -0.03em;
+  --text-display-l--font-weight: 600;
+
+  --text-h1: clamp(2rem, 3.6vw, 3.25rem);
+  --text-h1--line-height: 1.05;
+  --text-h1--letter-spacing: -0.025em;
+  --text-h1--font-weight: 600;
+
+  --text-h2: clamp(1.625rem, 2.6vw, 2.25rem);
+  --text-h2--line-height: 1.15;
+  --text-h2--letter-spacing: -0.02em;
+  --text-h2--font-weight: 600;
+
+  --text-h3: 1.25rem;
+  --text-h3--line-height: 1.3;
+  --text-h3--letter-spacing: -0.01em;
+  --text-h3--font-weight: 600;
+
+  --text-body-l: 1.125rem;
+  --text-body-l--line-height: 1.6;
+  --text-body-l--font-weight: 400;
+
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.65;
+  --text-body--font-weight: 400;
+
+  --text-caption: 0.875rem;
+  --text-caption--line-height: 1.5;
+  --text-caption--letter-spacing: 0.01em;
+  --text-caption--font-weight: 500;
+
+  --text-overline: 0.75rem;
+  --text-overline--line-height: 1;
+  --text-overline--letter-spacing: 0.14em;
+  --text-overline--font-weight: 600;
+
+  /* Shape */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Layout */
+  --spacing-gutter: clamp(1.25rem, 4vw, 2.5rem);
+  --spacing-section: clamp(6rem, 12vw, 11rem);
+
+  /* Elevation — the single permitted shadow (hover-lifted card only). */
+  --shadow-lift: 0 12px 32px -12px rgb(27 25 24 / 0.18);
+
+  /* Keyframes */
+  --animate-rise: rise 420ms var(--ease-out-expo) both;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Sticky header is 72px — keep anchor targets clear of it. */
+    scroll-padding-top: 5.5rem;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Ember focus ring, everywhere. Never remove without a replacement. */
+  :focus-visible {
+    outline: 3px solid var(--color-ember);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  /* Sora has no italic — stop the browser synthesizing an oblique. */
+  em,
+  i {
+    font-style: normal;
+    font-synthesis-style: none;
+  }
+}
+
+@layer components {
+  /*
+   * The header is fixed, so content needs to clear it — except on pages that
+   * open with a dark hero, which deliberately run underneath it.
+   */
+  main {
+    padding-top: 4.5rem; /* header height, h-18 */
+  }
+
+  body:has(#hero-sentinel) main {
+    padding-top: 0;
+  }
+
+  /*
+   * Default logo tone inside the header only — the overlay block below flips
+   * it. Scoped to [data-header] so the footer and mobile menu, which pass
+   * tone="white" and render a single variant, are unaffected.
+   */
+  [data-header] [data-logo="white"] {
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Header overlay mode — DELIBERATELY UNLAYERED.
+   The header is solid by default and turns transparent only on pages that
+   render #hero-sentinel (i.e. that open with a dark hero), until that sentinel
+   scrolls away.
+
+   These rules must override the header's own Tailwind utilities (bg-paper/80,
+   text-ink, ...). Utilities sit in a later cascade layer than @layer components,
+   so a components-layer rule would lose no matter how specific it is. Unlayered
+   CSS outranks every layer, so this block stays outside @layer on purpose.
+
+   Using :has() rather than JS state means the very first paint is already
+   correct — no flash of the wrong header, and it still works with JS off.
+   --------------------------------------------------------------------------- */
+body:has(#hero-sentinel) [data-header][data-condensed="false"] {
+  background-color: transparent;
+  backdrop-filter: none;
+  border-color: transparent;
+  color: var(--color-paper);
+}
+
+body:has(#hero-sentinel) [data-header][data-condensed="false"] [data-logo="white"] {
+  opacity: 1;
+}
+
+body:has(#hero-sentinel) [data-header][data-condensed="false"] [data-logo="ink"] {
+  opacity: 0;
+}
+
+@layer utilities {
+  /* Scrim over background video/imagery so text holds AA. DESIGN.md §8. */
+  .scrim {
+    background-image: linear-gradient(
+      180deg,
+      rgb(27 25 24 / 0.85) 0%,
+      rgb(27 25 24 / 0.62) 45%,
+      rgb(27 25 24 / 0.92) 100%
+    );
+  }
+
+  /* Horizontal work rail — CSS scroll-snap, no JS carousel. DESIGN.md §2 #6. */
+  .rail {
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rail > * {
+    scroll-snap-align: start;
+  }
+}
+
+/* Functional requirement, not a nicety. DESIGN.md §7. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
