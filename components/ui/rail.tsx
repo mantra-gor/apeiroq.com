@@ -81,10 +81,21 @@ export function Rail({
         role="region"
         aria-label={label}
         tabIndex={0}
-        // Hands trackpad gestures inside the rail back to the browser. Without
-        // it, Lenis captures the whole wheel event and a horizontal swipe over
-        // the cards scrolls the page instead.
-        data-lenis-prevent
+        /*
+         * Hands *horizontal* trackpad gestures inside the rail back to the
+         * browser. Lenis only ignores a wheel event outright when deltaY is
+         * exactly 0, and a real two-finger swipe never is — so without this an
+         * attempt to scroll the cards sideways nudges the page down as well.
+         *
+         * Deliberately the directional attribute, not the blanket
+         * `data-lenis-prevent`. That one opts the rail out of Lenis entirely,
+         * which also means scrolling *down* the page with the pointer over the
+         * cards falls back to native scrolling — the one strip of the page
+         * where the smoothing visibly cuts out. This is scoped to gestures
+         * where |deltaX| >= |deltaY|, so the rail owns sideways and the page
+         * keeps owning vertical.
+         */
+        data-lenis-prevent-horizontal
         className="rail -mx-gutter flex snap-x gap-6 overflow-x-auto px-gutter pb-2"
       >
         {children}

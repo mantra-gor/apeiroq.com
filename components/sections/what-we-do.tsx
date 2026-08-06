@@ -1,13 +1,18 @@
 import { services } from "@/content/services";
-import { Disclosure } from "@/components/ui/disclosure";
 import { Reveal } from "@/components/ui/reveal";
 import { Overline, Section } from "@/components/ui/section";
 
 /**
- * What we do — DESIGN.md §11 §3, using the expandable service card from §2 #3.
+ * What we do — DESIGN.md §11 §3.
  *
- * One claim: strong expertise, flexible capacity, predictable delivery. Three
- * cards support it and nothing else competes for the eye.
+ * Four cards, one per stage of an engagement. They are a journey, not a menu,
+ * so order carries the meaning: an <ol>, read left to right at xl. Nothing is
+ * drawn to say so.
+ *
+ * Not the §2 #3 disclosure — a chevron over one sentence hides nothing. Not
+ * the §2 #4 numbered timeline either — How We Work sits directly below with
+ * oversized numerals, and a second numbered progression against it is the pair
+ * of competing focal points §3 rules out.
  */
 export function WhatWeDo() {
   return (
@@ -16,37 +21,38 @@ export function WhatWeDo() {
         <Reveal>
           <Overline>What we do</Overline>
           <h2 id="what-we-do-heading" className="mt-6 text-display-l">
-            Strong expertise. Flexible capacity. Predictable delivery.
+            From idea to production.
           </h2>
           <p className="mt-6 text-body-l text-ink-500">
-            Three ways an engagement starts. Each one ends with something you
-            can hold us to.
+            We partner with businesses throughout the software lifecycle — from
+            validating an idea to designing scalable architectures, developing
+            products, and continuously improving them after launch.
           </p>
         </Reveal>
       </div>
 
-      <div className="mt-16 grid gap-6 md:mt-20">
+      {/*
+        role="list" is not redundant here: Tailwind's preflight sets
+        list-style: none on every ol, and WebKit drops the list role with it.
+        Without this, Safari never announces "1 of 4" — which is the only place
+        the sequence is stated to a screen reader.
+      */}
+      <ol
+        role="list"
+        className="mt-16 grid gap-6 md:mt-20 md:grid-cols-2 md:gap-8 xl:grid-cols-4"
+      >
         {services.map((service, index) => (
-          <Reveal key={service.id} delay={index * 70}>
-            <Disclosure title={service.title} summary={service.summary}>
-              <p className="max-w-[68ch] text-body text-ink-500">
-                {service.detail}
-              </p>
-              <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-                {service.points.map((point) => (
-                  <li key={point} className="flex items-baseline gap-3 text-body">
-                    <span
-                      aria-hidden="true"
-                      className="h-1.5 w-1.5 shrink-0 translate-y-[-0.15em] rounded-full bg-ember"
-                    />
-                    {point}
-                  </li>
-                ))}
-              </ul>
-            </Disclosure>
+          <Reveal
+            as="li"
+            key={service.id}
+            delay={index * 70}
+            className="rounded-lg border border-ink-200 p-6"
+          >
+            <h3 className="text-h3">{service.title}</h3>
+            <p className="mt-3 text-body text-ink-500">{service.description}</p>
           </Reveal>
         ))}
-      </div>
+      </ol>
     </Section>
   );
 }

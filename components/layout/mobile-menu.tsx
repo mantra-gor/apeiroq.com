@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
 import { Arrow } from "@/components/ui/arrow";
 import { Logo } from "@/components/ui/logo";
+import { lockPageScroll, unlockPageScroll } from "./smooth-scroll";
 import { navLinks, primaryCta, siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +40,9 @@ export function MobileMenu() {
     const scrollbar = window.innerWidth - document.documentElement.clientWidth;
     body.style.overflow = "hidden";
     if (scrollbar > 0) body.style.paddingRight = `${scrollbar}px`;
+    // Smooth scrolling has to be parked too — it keeps integrating wheel
+    // deltas against a scroll it can no longer apply, then snaps on close.
+    lockPageScroll();
 
     panelRef.current?.querySelector<HTMLElement>(FOCUSABLE)?.focus();
 
@@ -71,6 +75,7 @@ export function MobileMenu() {
       document.removeEventListener("keydown", onKeyDown);
       body.style.overflow = previousOverflow;
       body.style.paddingRight = "";
+      unlockPageScroll();
       trigger?.focus();
     };
   }, [open, close]);

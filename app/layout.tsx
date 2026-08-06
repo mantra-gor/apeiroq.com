@@ -53,11 +53,20 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang={siteConfig.locale}
-      className={`${sora.variable} h-full antialiased`}
-    >
-      <body className="flex min-h-full flex-col">
+    /*
+     * No `h-full` on <html>, deliberately — see globals.css §Lenis. Lenis
+     * watches documentElement with a ResizeObserver to know how far the page
+     * can scroll, and `height: 100%` pins that box to the viewport so the
+     * observer never fires when content grows. Opening an FAQ disclosure would
+     * then leave the scroll limit stuck at the old page height.
+     *
+     * The sticky footer that `h-full` + `min-h-full` used to buy is now
+     * `min-h-svh` on <body> alone, which needs no height on the ancestor.
+     * Small viewport units, not `dvh`: dvh changes as mobile browser chrome
+     * hides during scroll, and every change resizes the document mid-gesture.
+     */
+    <html lang={siteConfig.locale} className={`${sora.variable} antialiased`}>
+      <body className="flex min-h-svh flex-col">
         <a
           href="#main"
           className="sr-only rounded-full bg-ink px-5 py-3 text-caption text-paper focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100"

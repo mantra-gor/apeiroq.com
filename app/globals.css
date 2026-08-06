@@ -124,15 +124,48 @@
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* -------------------------------------------------------------------------
+     Lenis. The library's own stylesheet, inlined — it is five rules, and
+     shipping them here keeps the cascade visible rather than hidden behind an
+     @import from node_modules.
+
+     The sixth rule it ships, `html.lenis, html.lenis body { height: auto }`,
+     is deliberately absent: it would sit in this layer and therefore lose to
+     the `h-full` utility it exists to overrule (see the cascade-layer note in
+     CLAUDE.md). That height is removed at source in layout.tsx instead.
+     ------------------------------------------------------------------------- */
+
   /*
-   * Set by SmoothScroll once locomotive-scroll is actually running. CSS smooth
-   * scrolling and Lenis both animate programmatic jumps, and together an anchor
-   * link visibly animates twice. The attribute only appears after the library
+   * Set by SmoothScroll once Lenis is actually running. CSS smooth scrolling
+   * and Lenis both animate programmatic jumps, and together an anchor link
+   * visibly animates twice. The attribute only appears after the library
    * loads, so with JS off — or if it never loads — native smoothing still
    * applies.
    */
   html[data-lenis="on"] {
     scroll-behavior: auto;
+  }
+
+  /*
+   * `.lenis-stopped` is applied by lenis.stop(), which the mobile menu calls
+   * while it is open. Without this the menu's own `overflow: hidden` lock and
+   * Lenis disagree about the scroll position and the page jumps on close.
+   */
+  html.lenis-stopped {
+    overflow: clip;
+  }
+
+  /* Nested scrollers that opted out of Lenis keep their own overscroll edge. */
+  .lenis [data-lenis-prevent],
+  .lenis [data-lenis-prevent-horizontal],
+  .lenis [data-lenis-prevent-wheel],
+  .lenis [data-lenis-prevent-touch] {
+    overscroll-behavior: contain;
+  }
+
+  /* A frame that swallows wheel events desyncs the smoothing behind it. */
+  .lenis.lenis-smooth iframe {
+    pointer-events: none;
   }
 
   body {
@@ -264,6 +297,19 @@ body:has(#hero-sentinel) [data-header][data-condensed="false"] [data-logo="ink"]
       repeating-linear-gradient(to right, #000 0 4px, transparent 4px 8px),
       repeating-linear-gradient(to bottom, #000 0 4px, transparent 4px 8px);
     mask-composite: intersect;
+  }
+
+  /*
+   * The iOS-only half of "don't select this". Tailwind's `select-none` covers
+   * user-select (Lightning CSS emits whatever prefixes our browserslist still
+   * needs), but has no utility for the long-press callout, which otherwise pops
+   * the copy/share sheet on top of the hero.
+   *
+   * Not applied to anything the user might legitimately want to copy — an email
+   * address, a code sample. Hero copy only.
+   */
+  .no-callout {
+    -webkit-touch-callout: none;
   }
 
   /*
