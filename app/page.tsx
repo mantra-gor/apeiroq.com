@@ -38,8 +38,8 @@ export default function HomePage() {
       <CaseStudies />
       <TechStack />
       <Testimonials />
-      <Newsletter />
-      <ClosingCta />
+      {/* <Newsletter /> */}
+      {/* <ClosingCta /> */}
     </>
   );
 }

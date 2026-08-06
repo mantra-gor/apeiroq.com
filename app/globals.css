@@ -267,6 +267,32 @@ body:has(#hero-sentinel) [data-header][data-condensed="false"] [data-logo="ink"]
   }
 
   /*
+   * Hero field weight — composition, not contrast.
+   *
+   * The scrim below resolves the field vertically, which is what keeps the copy
+   * legible. On its own it leaves the surviving field spread evenly across the
+   * top edge, which reads as wallpaper. This anchors the field's energy to the
+   * top-right instead, so it falls away diagonally towards the bottom-left
+   * where the headline, lede and CTAs sit.
+   *
+   * Deliberately an inverse vignette (transparent at the anchor, opaque at the
+   * far edge) rather than a linear diagonal — a linear gradient bands visibly
+   * across a field this regular, and a radial falls off in every direction from
+   * one point, which is what "the field is brightest over there" actually looks
+   * like. The anchor matches .pixel-field's own 84% 18% highlight, so the CSS
+   * path and the WebGL path peak in the same place.
+   */
+  .field-weight {
+    background-image: radial-gradient(
+      140% 125% at 86% 8%,
+      transparent 0%,
+      rgb(27 25 24 / 0.3) 30%,
+      rgb(27 25 24 / 0.68) 58%,
+      rgb(27 25 24 / 0.9) 100%
+    );
+  }
+
+  /*
    * Hero scrim — a contrast requirement, not styling.
    *
    * The headline is --paper on --ink (15.9:1), but a lit pixel sitting directly
@@ -280,12 +306,17 @@ body:has(#hero-sentinel) [data-header][data-condensed="false"] [data-logo="ink"]
    * mask-composite, which degrades silently and inconsistently across engines —
    * and a contrast guarantee is the last thing that should depend on a property
    * with patchy support. Stacked elements composite the same way everywhere.
+   *
+   * Only the 70%/100% stops are the guarantee. The two above them are
+   * compositional and tuned against .field-weight — there is no copy in the top
+   * 40% of the hero, so holding it that dark bought nothing and cost the field
+   * its presence.
    */
   .hero-scrim {
     background-image: linear-gradient(
       to bottom,
-      rgb(27 25 24 / 0.3) 0%,
-      rgb(27 25 24 / 0.52) 38%,
+      rgb(27 25 24 / 0.16) 0%,
+      rgb(27 25 24 / 0.34) 38%,
       rgb(27 25 24 / 0.88) 70%,
       rgb(27 25 24 / 0.97) 100%
     );

@@ -47,6 +47,13 @@ function shouldRenderCanvas() {
  *   1. opaque --ink, so the headline always has a compliant background
  *   2. `.pixel-field`, a pure-CSS pixel grid in the server HTML
  *   3. the WebGL field, if and only if it is allowed to mount
+ *   4. `.field-weight`, pulling the field's energy to the top-right
+ *   5. `.hero-scrim`, the contrast guarantee under the copy
+ *
+ * Layers 4 and 5 sit above the canvas and are painted in the server HTML, so
+ * the composition is identical on every path — canvas or no canvas. 5 is the
+ * one that makes the copy legible and is not optional; 4 is what stops the
+ * surviving field from reading as evenly-spread wallpaper.
  *
  * The canvas is scheduled on idle *after* first paint, so the LCP element is
  * the headline — never the canvas, and never a canvas-shaped hole. Because
@@ -78,18 +85,34 @@ export function HeroBackdrop() {
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-ink">
       <div className="pixel-field absolute inset-0" />
       {canvasReady && (
-        <div className="field-fade absolute inset-0 animate-fade-in">
+        <div className="absolute inset-0 animate-fade-in">
           <PixelBlast
             className="h-full w-full"
-            color="#ffffff"
+            /*
+             * --color-ink-200, resolved. The prop takes a colour value, not a
+             * custom property — the shader uploads it as a uniform, so it can
+             * never be a var(). Pure white was the old value and it is the
+             * worst case for legibility: it puts a maximum-luminance block
+             * directly behind a letterform.
+             */
+            color="#d9d4d1"
             pixelSize={4}
             patternScale={2.4}
-            patternDensity={0.9}
+            /* 0.5 is neutral in the shader's `feed` term. 0.9 was near-full
+             * coverage, which is what buried the lede; the scrim and weight
+             * layers now handle legibility, so this only has to stop the field
+             * from reading as solid noise. */
+            patternDensity={0.7}
             speed={0.35}
-            edgeFade={0.35}
+            /* .field-weight owns the falloff now; this only keeps the canvas
+             * from ending on a hard line at the top-right corner, which is the
+             * one place the weight layer is fully transparent. */
+            edgeFade={0.15}
           />
         </div>
       )}
+      <div className="field-weight absolute inset-0" />
+      <div className="hero-scrim absolute inset-0" />
     </div>
   );
 }

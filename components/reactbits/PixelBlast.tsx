@@ -15,15 +15,27 @@
  *   consumers of `postprocessing` (EffectComposer / EffectPass / Effect), so
  *   dropping them drops that dependency entirely — `three` is now the only
  *   runtime this component pulls in.
- * - `enableRipples` and the pointer handlers. The click-ripple loop ran ten
- *   iterations per fragment and added pointerdown/pointermove listeners over
- *   the whole hero, which costs INP for an effect sitting behind an <h1>.
  * - `variant` / the circle, triangle and diamond masks. We use `square`, which
  *   needs no mask function at all (coverage is the value).
  * - `antialias`. We draw hard-edged blocks; MSAA changes nothing visible and
  *   costs fill rate. Hardcoded off.
  * - `transparent`. Always transparent — this composites over `--color-ink`.
  * - `pixelSizeJitter`, `style`. Unused at the call site.
+ *
+ * Click ripples are ours, not upstream's. Upstream's `enableRipples` was removed
+ * when this was first vendored because it ran a ten-iteration loop per fragment
+ * and attached pointerdown *and pointermove* listeners across the whole hero,
+ * which is an INP cost for an effect sitting behind an <h1>. The reimplementation
+ * keeps the effect and drops the cost:
+ *
+ * - pointerdown only. Nothing runs while the pointer merely moves, which is
+ *   where effectively all of the original expense was.
+ * - MAX_RIPPLES is 6, and dead slots leave the loop on a subtract-and-compare
+ *   before touching a distance or a smoothstep. Idle cost is close to nothing,
+ *   which matters because idle is the state the hero is in ~always.
+ * - The ring is sampled at the *cell* centre, not the fragment, so it quantises
+ *   into the same blocks as the field instead of drawing a smooth circle over
+ *   the top of it.
  *
  * Two upstream bugs fixed:
  * - `autoPauseOffscreen` did nothing: `visibilityRef` was initialised to
@@ -49,8 +61,14 @@ import {
   Scene,
   ShaderMaterial,
   Vector2,
+  Vector3,
   WebGLRenderer,
 } from "three";
+
+/** Must match MAX_RIPPLES in the fragment shader. */
+const MAX_RIPPLES = 6;
+/** Parks an unused slot far enough in the past to always fail the age test. */
+const RIPPLE_DEAD = -1000;
 
 type PixelBlastProps = {
   /** Any CSS colour string. Pass a resolved value — not a CSS custom property. */
@@ -84,6 +102,25 @@ uniform float uPixelSize;
 uniform float uScale;
 uniform float uDensity;
 uniform float uEdgeFade;
+
+/*
+ * Click ripples. xy is the origin in gl_FragCoord space (pixels, origin
+ * bottom-left); z is the start time in RAW seconds — uRippleTime, not uTime,
+ * because uTime is premultiplied by the speed prop, and the ripple must expand
+ * at the same rate no matter how slowly the field itself drifts.
+ *
+ * A slot is dead when its age falls outside [0, RIPPLE_LIFE]. Unused slots are
+ * parked far in the past, so they fail that test and cost one subtract and one
+ * compare each.
+ */
+#define MAX_RIPPLES      6
+#define RIPPLE_LIFE      1.6   // seconds
+#define RIPPLE_SPEED     420.0 // px/sec — expansion rate of the ring
+#define RIPPLE_THICKNESS 90.0  // px — width of the lit band
+#define RIPPLE_STRENGTH  0.6   // added to the feed term at the crest of the ring
+
+uniform vec3  uRipples[MAX_RIPPLES];
+uniform float uRippleTime;
 
 out vec4 fragColor;
 
@@ -157,6 +194,27 @@ void main(){
   base = base * 0.5 - 0.65;
 
   float feed = base + (uDensity - 0.5) * 0.3;
+
+  /*
+   * Measured from the cell centre rather than gl_FragCoord, so the ring lands
+   * on the same grid as the field and reads as blocks lighting up rather than a
+   * smooth circle drawn over the top.
+   */
+  vec2 cellCentre = cellCoord + uResolution * 0.5;
+  float ripple = 0.0;
+  for (int i = 0; i < MAX_RIPPLES; ++i) {
+    float age = uRippleTime - uRipples[i].z;
+    if (age < 0.0 || age > RIPPLE_LIFE) continue;
+
+    float ring = 1.0 - smoothstep(
+      0.0,
+      RIPPLE_THICKNESS,
+      abs(distance(cellCentre, uRipples[i].xy) - age * RIPPLE_SPEED)
+    );
+    // Fade the whole ring out over its life so it dissolves instead of clipping.
+    ripple = max(ripple, ring * (1.0 - age / RIPPLE_LIFE));
+  }
+  feed += ripple * RIPPLE_STRENGTH;
 
   float bayer = Bayer8(fragCoord / uPixelSize) - 0.5;
   float M = step(0.5, feed + bayer);
@@ -243,6 +301,13 @@ export default function PixelBlast({
       uScale: { value: patternScale },
       uDensity: { value: patternDensity },
       uEdgeFade: { value: edgeFade },
+      uRipples: {
+        value: Array.from(
+          { length: MAX_RIPPLES },
+          () => new Vector3(0, 0, RIPPLE_DEAD),
+        ),
+      },
+      uRippleTime: { value: 0 },
     };
 
     const scene = new Scene();
@@ -299,6 +364,49 @@ export default function PixelBlast({
     const frameInterval = 1 / 30;
     let lastFrame = -Infinity;
 
+    /*
+     * Raw elapsed seconds, tracked separately from uTime because uTime is
+     * premultiplied by `speed`. Only advances on frames we actually draw, so a
+     * ripple spawned while the hero is scrolled away is already dead by the time
+     * it comes back.
+     */
+    let rippleTime = 0;
+    let nextRipple = 0;
+
+    /*
+     * On window, not on the canvas. The hero backdrop is `pointer-events-none`
+     * at `-z-10` — it has to be, or it would swallow clicks on the CTAs sitting
+     * above it — so it can never receive a pointer event of its own. Listening
+     * globally and hit-testing the canvas rect is what lets a click anywhere in
+     * the hero ripple, including over the headline and the buttons, without the
+     * backdrop intercepting anything.
+     *
+     * Passive, and it never calls preventDefault: navigation is untouched.
+     */
+    const spawnRipple = (event: PointerEvent) => {
+      if (!onScreen) return;
+
+      const rect = canvas.getBoundingClientRect();
+      if (
+        event.clientX < rect.left ||
+        event.clientX > rect.right ||
+        event.clientY < rect.top ||
+        event.clientY > rect.bottom
+      ) {
+        return;
+      }
+
+      uniforms.uRipples.value[nextRipple].set(
+        (event.clientX - rect.left) * (canvas.width / rect.width),
+        // gl_FragCoord is bottom-left origin; clientY is top-left.
+        (rect.bottom - event.clientY) * (canvas.height / rect.height),
+        rippleTime,
+      );
+      // Oldest slot is always the one overwritten once all six are in flight.
+      nextRipple = (nextRipple + 1) % MAX_RIPPLES;
+    };
+    window.addEventListener("pointerdown", spawnRipple, { passive: true });
+
     let raf = 0;
     const animate = () => {
       raf = requestAnimationFrame(animate);
@@ -309,12 +417,15 @@ export default function PixelBlast({
       lastFrame = elapsed;
 
       uniforms.uTime.value = timeOffset + elapsed * speed;
+      uniforms.uRippleTime.value = elapsed;
+      rippleTime = elapsed;
       renderer.render(scene, camera);
     };
     raf = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(raf);
+      window.removeEventListener("pointerdown", spawnRipple);
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
       geometry.dispose();

@@ -83,7 +83,9 @@ export function Header() {
                       "after:origin-left after:scale-x-0 after:bg-ember",
                       "after:transition-transform after:duration-160 after:ease-standard",
                       "hover:after:scale-x-100",
-                      active ? "opacity-100 after:scale-x-100" : "opacity-70 hover:opacity-100",
+                      active
+                        ? "opacity-100 after:scale-x-100"
+                        : "opacity-70 hover:opacity-100",
                     )}
                   >
                     {link.label}

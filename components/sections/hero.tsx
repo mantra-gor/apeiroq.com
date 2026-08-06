@@ -15,8 +15,14 @@ import { primaryCta } from "@/lib/site";
  * This component stays a Server Component. Only the backdrop is client-side.
  */
 export function Hero() {
+  /*
+   * `min-h-svh`, not `h-screen`. `h-screen` is 100*vh*, the *large* viewport —
+   * on mobile Safari that is taller than what is actually visible, so the CTAs
+   * sat under the browser chrome. And a fixed height plus `overflow-hidden`
+   * clips the copy at large text-zoom levels.
+   */
   return (
-    <section className="relative isolate flex h-screen min -h-[92svh] items-end overflow-hidden bg-ink text-paper">
+    <section className="relative isolate flex min-h-svh items-end overflow-hidden bg-ink text-paper">
       {/*
         Marks the top of the dark hero. The header watches this to decide when
         to switch from transparent to solid — see globals.css and Header.
