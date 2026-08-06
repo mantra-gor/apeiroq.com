@@ -259,28 +259,36 @@ body:has(#hero-sentinel) [data-header][data-condensed="false"] [data-logo="ink"]
       radial-gradient(60% 50% at 84% 18%, rgb(255 255 255 / 0.18) 0%, transparent 74%);
     -webkit-mask-image:
       repeating-linear-gradient(to right, #000 0 4px, transparent 4px 8px),
-      repeating-linear-gradient(to bottom, #000 0 4px, transparent 4px 8px),
-      linear-gradient(to bottom, #000 0 42%, transparent 80%);
+      repeating-linear-gradient(to bottom, #000 0 4px, transparent 4px 8px);
     mask-image:
       repeating-linear-gradient(to right, #000 0 4px, transparent 4px 8px),
-      repeating-linear-gradient(to bottom, #000 0 4px, transparent 4px 8px),
-      linear-gradient(to bottom, #000 0 42%, transparent 80%);
-    -webkit-mask-composite: source-in;
+      repeating-linear-gradient(to bottom, #000 0 4px, transparent 4px 8px);
     mask-composite: intersect;
   }
 
   /*
-   * The same bottom falloff, applied to the WebGL canvas wrapper.
+   * Hero scrim — a contrast requirement, not styling.
    *
-   * This is a contrast requirement, not styling. The hero headline is --paper
-   * on --ink (15.9:1), but a lit pixel sitting behind it drags the local
-   * background up to roughly 2.9:1, which fails AA. Fading the field out above
-   * the text guarantees the copy always sits on opaque ink, whatever the shader
-   * happens to be drawing that frame.
+   * The headline is --paper on --ink (15.9:1), but a lit pixel sitting directly
+   * behind a letter drags the local background to roughly 2.9:1, which fails
+   * AA. This holds the lower half at 88-97% opaque ink, so the copy always
+   * lands on effectively flat --ink no matter what the shader draws that frame,
+   * while the top stays open enough for the field to read.
+   *
+   * Deliberately a painted element rather than a mask on the field. The earlier
+   * version faded the field with a third mask layer composited via
+   * mask-composite, which degrades silently and inconsistently across engines —
+   * and a contrast guarantee is the last thing that should depend on a property
+   * with patchy support. Stacked elements composite the same way everywhere.
    */
-  .field-fade {
-    -webkit-mask-image: linear-gradient(to bottom, #000 0 42%, transparent 80%);
-    mask-image: linear-gradient(to bottom, #000 0 42%, transparent 80%);
+  .hero-scrim {
+    background-image: linear-gradient(
+      to bottom,
+      rgb(27 25 24 / 0.3) 0%,
+      rgb(27 25 24 / 0.52) 38%,
+      rgb(27 25 24 / 0.88) 70%,
+      rgb(27 25 24 / 0.97) 100%
+    );
   }
 
   /*

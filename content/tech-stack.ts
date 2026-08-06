@@ -17,10 +17,12 @@ import type { TechIconName } from "@/lib/tech-icons";
  * international buyer is scanning for, and it reads as a team that has built
  * retrieval systems rather than one that has called an API once.
  *
- * `icon` is optional. Seven marks here have no glyph because their trademark
- * holders asked to be removed from the icon set we generate from — see
- * lib/tech-icons.ts. Those pills render as text, which is a normal state, not
- * a missing asset. Do not substitute a lookalike icon for them.
+ * `icon` is optional and one item leaves it off: "Self-managed VPS" is a way of
+ * working, not a product, so it has no mark to carry. A text-only pill is a
+ * normal state, not a missing asset. Six marks here are pinned in
+ * scripts/archived-tech-icons.mjs because simple-icons no longer ships them —
+ * take a replacement from the vendor's own brand assets if one is ever needed,
+ * never a hand-drawn lookalike.
  */
 
 export type TechItem = {
@@ -62,10 +64,12 @@ export const techStack: TechCategory[] = [
   {
     name: "AI",
     items: [
-      { name: "OpenAI (GPT)" },
+      { name: "OpenAI (GPT)", icon: "openai" },
       { name: "Google Gemini", icon: "googlegemini" },
       { name: "Claude", icon: "claude" },
-      { name: "AWS Bedrock" },
+      // Bedrock has no mark of its own in any icon set; the AWS mark is the
+      // accurate one to carry, since that is whose service it is.
+      { name: "AWS Bedrock", icon: "amazonwebservices" },
       { name: "LangChain", icon: "langchain" },
       { name: "LangGraph", icon: "langgraph" },
       { name: "Qdrant", icon: "qdrant" },
@@ -88,7 +92,7 @@ export const techStack: TechCategory[] = [
       { name: "PostgreSQL", icon: "postgresql" },
       { name: "MongoDB", icon: "mongodb" },
       { name: "CockroachDB", icon: "cockroachlabs" },
-      { name: "DynamoDB" },
+      { name: "DynamoDB", icon: "amazondynamodb" },
       { name: "SQLite", icon: "sqlite" },
       { name: "Firebase", icon: "firebase" },
     ],
@@ -96,9 +100,9 @@ export const techStack: TechCategory[] = [
   {
     name: "Cloud",
     items: [
-      { name: "AWS" },
+      { name: "AWS", icon: "amazonwebservices" },
       { name: "GCP", icon: "googlecloud" },
-      { name: "Azure" },
+      { name: "Azure", icon: "microsoftazure" },
       { name: "DigitalOcean", icon: "digitalocean" },
       { name: "Cloudflare", icon: "cloudflare" },
       { name: "Self-managed VPS" },
@@ -108,7 +112,7 @@ export const techStack: TechCategory[] = [
     name: "DevOps",
     items: [
       { name: "Jenkins", icon: "jenkins" },
-      { name: "Azure DevOps" },
+      { name: "Azure DevOps", icon: "azuredevops" },
       { name: "Docker", icon: "docker" },
       { name: "Kubernetes", icon: "kubernetes" },
     ],
@@ -117,7 +121,7 @@ export const techStack: TechCategory[] = [
     name: "eCommerce",
     items: [
       { name: "WooCommerce", icon: "woocommerce" },
-      { name: "Magento" },
+      { name: "Magento", icon: "magento" },
       { name: "Shopify", icon: "shopify" },
     ],
   },

@@ -9,10 +9,10 @@ import { Overline, Section } from "@/components/ui/section";
  * brief calls for it and because a specific stack is exactly the kind of proof
  * §1 asks for: verifiable, unpadded, no adjectives.
  *
- * Deliberately typographic. No vendor logos: they are all coloured, which
- * fights the two-colour palette in §4; they are third-party trademarks; and
- * roughly forty logo files would be the heaviest thing on a page that already
- * carries a WebGL hero. Text costs nothing and reads more confident.
+ * Typography-led. The marks are inline monochrome paths drawn in currentColor,
+ * not logo files: forty coloured images would fight the two-colour palette in
+ * §4 and be the heaviest thing on a page that already carries a WebGL hero.
+ * Each one is a third-party trademark, used only to name the technology.
  *
  * Marked up as a description list — each category genuinely defines a group of
  * terms, so <dl>/<dt>/<dd> is the honest structure rather than nested divs.
