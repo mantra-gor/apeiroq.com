@@ -27,7 +27,7 @@ export type NavLink = {
 export const navLinks: NavLink[] = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
-  { href: "/projects", label: "Projects" },
+  { href: "/case-studies", label: "Case Studies" },
   { href: "/blog", label: "Blog" },
   { href: "/careers", label: "Careers" },
   { href: "/contact", label: "Contact" },
@@ -41,7 +41,7 @@ export const footerNav: { heading: string; links: NavLink[] }[] = [
     heading: "Company",
     links: [
       { href: "/about", label: "About Us" },
-      { href: "/projects", label: "Projects" },
+      { href: "/case-studies", label: "Case Studies" },
       { href: "/careers", label: "Careers" },
       { href: "/blog", label: "Blog" },
     ],

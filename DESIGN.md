@@ -317,7 +317,7 @@ The raster icons (`apeiroq-icon-*`, `apeiroq-logo-dark-og`) serve `app/icon.png`
 
 ### Header
 
-Sticky, 72px, transparent over the hero and blurred-white after 24px of scroll. Left: lockup. Center: Home · About · Projects · Blog · Careers · Contact. Right: **Hire Us** (primary pill). Mobile: full-screen overlay menu, links staggered in at 40ms intervals.
+Sticky, 72px, transparent over the hero and blurred-white after 24px of scroll. Left: lockup. Center: Home · About · Case Studies · Blog · Careers · Contact. Right: **Hire Us** (primary pill). Mobile: full-screen overlay menu, links staggered in at 40ms intervals.
 
 ### Footer
 
@@ -377,7 +377,7 @@ Land them in `components/reactbits/<Name>.tsx` with a header comment recording s
 | Headline reveal | word/char text animation (e.g. BlurText, SplitText) | Hero H1 — **once per page** |
 | Scroll reveal | scroll-triggered fade/rise | Section openers |
 | Client logo row | continuous marquee / logo loop | Home trust bar |
-| Card hover | spotlight / subtle tilt | Projects grid |
+| Card hover | spotlight / subtle tilt | Case studies grid |
 | Ambient hero backdrop | canvas/WebGL field | **≤1 per page**, below-the-fold only, see limits |
 
 **Hard limits**
@@ -503,8 +503,8 @@ Include `Review`/`AggregateRating` **only** when we have verifiable, attributed 
 ```
 /                 Home
 /about            About Us
-/projects         Projects (index)
-/projects/[slug]  Case study
+/case-studies         Case Studies (index)
+/case-studies/[slug]  Case study
 /blog             Blog (index)
 /blog/[slug]      Post
 /careers          Careers
@@ -515,7 +515,7 @@ Include `Review`/`AggregateRating` **only** when we have verifiable, attributed 
 
 ### Decision: testimonials & clients live on the Home page
 
-**No standalone `/testimonials` or `/clients` route.** With 3 clients, a dedicated page reads as thin — it advertises the gap and dilutes crawl equity across near-empty URLs. Concentrated on Home, the same 3 proofs read as focused and confident, and they land exactly where the buying decision happens. They are built as reusable sections and also placed on `/projects` (client quote inside the matching case study) and `/hire-us` (one quote above the form).
+**No standalone `/testimonials` or `/clients` route.** With 3 clients, a dedicated page reads as thin — it advertises the gap and dilutes crawl equity across near-empty URLs. Concentrated on Home, the same 3 proofs read as focused and confident, and they land exactly where the buying decision happens. They are built as reusable sections and also placed on `/case-studies` (client quote inside the matching case study) and `/hire-us` (one quote above the form).
 
 Revisit at ~8 clients.
 
@@ -530,7 +530,7 @@ It ranks for commercial-intent queries, gives the nav CTA a destination with roo
    The field replaces the background video §8 describes — one ambient treatment, not both — but inherits the whole §8 contract: a CSS pixel grid is painted in the server HTML and is what the LCP measures, the canvas mounts on idle after first paint, and it is skipped entirely under `prefers-reduced-motion`, save-data, 2G, or below 768px. It is masked out above the headline so the copy always sits on opaque ink.
 2. **Trust bar** — "Trusted by teams building at" + 3 client logos, generous size, country in caption type under each (§2 #10). No fake grid padding, no marquee at three logos.
 3. **What we build** — 3–4 capability cards (custom platforms, product engineering, integrations, cloud & scale). Plain language, no icon soup.
-4. **Products & prototypes** — the strongest section. Our 3–4 prototypes as work cards (§2 #2) in a scroll-snap rail (§2 #6), each honestly framed: *"Built as a product thesis. Customized and shipped for [client]."* This turns a small portfolio into evidence of independent product thinking, which is rarer than contract delivery. Where a client outcome is publishable, attach an outcome stat (§2 #5).
+4. **Case studies** — the strongest section. Our 3–4 prototypes as work cards (§2 #2) in a scroll-snap rail (§2 #6), each honestly framed: *"Built as a product thesis. Customized and shipped for [client]."* This turns a small portfolio into evidence of independent product thinking, which is rarer than contract delivery. Where a client outcome is publishable, attach an outcome stat (§2 #5).
 5. **How we work** — the remote-first process: discovery → prototype → iterate → ship → scale. Where "12 engineers, no handoffs, direct access" is stated explicitly.
 6. **Testimonials** — 3 real quotes, name + role + company + location pill (§2 #8), one per client. Large type, static, one at a time. Never a carousel with dots and fake velocity — the scroll-snap rail (§2 #6) is for *work*, not for quotes.
 7. **The team** — 12 engineers, fully distributed. A short strip, real faces or a real work-in-progress shot.
@@ -540,7 +540,7 @@ It ranks for commercial-intent queries, gives the nav CTA a destination with roo
 ### Other pages
 
 - **About Us** — origin story, operating principles (3–5, opinionated), the 12-person team, how full-remote actually works (overlap hours, comms cadence, demo rhythm), engagement models.
-- **Projects** — index of the 3–4 prototypes; each case study runs problem → thesis → what we built → stack → what changed for the client. Screens over prose. Say "prototype" when it is one; that honesty is the differentiator.
+- **Case Studies** — index of the 3–4 prototypes; each case study runs problem → thesis → what we built → stack → what changed for the client. The problem and how the product solves it are the two blocks that carry the page. Screens over prose. Say "prototype" when it is one; that honesty is the differentiator.
 - **Blog** — MDX, filesystem-sourced, statically generated. Engineering depth, not marketing.
 - **Careers** — remote-first pitch, how we hire (transparent stages + timeline), open roles with `JobPosting` schema. Even with zero openings this page recruits and signals stability.
 - **Contact Us** — form (name, email, company, budget range, message), expected response time stated in writing, alternate email, timezone note. No phone-only wall.

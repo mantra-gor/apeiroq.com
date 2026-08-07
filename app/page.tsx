@@ -24,7 +24,7 @@ import { ClosingCta } from "@/components/sections/closing-cta";
  *
  * Three sections render nothing until their content files are filled in:
  *
- *   CaseStudies   content/projects.ts       — real screenshots and outcomes
+ *   CaseStudies   content/case-studies.ts   — real screenshots and outcomes
  *   Testimonials  content/testimonials.ts   — three attributed, permitted quotes
  *   Faq           content/faqs.ts           — seven answers, several contractual
  *

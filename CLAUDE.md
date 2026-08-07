@@ -74,7 +74,7 @@ app/
   sitemap.ts              MetadataRoute.Sitemap — all static routes + all blog posts
   robots.ts               MetadataRoute.Robots
   opengraph-image.tsx     default OG card (ImageResponse from next/og)
-  about/ projects/ blog/ careers/ contact/ hire-us/
+  about/ case-studies/ blog/ careers/ contact/ hire-us/
   actions/                Server Actions (newsletter, contact)
 components/
   ui/                     primitives (Button, Container, Section, Arrow, Logo)
@@ -82,7 +82,7 @@ components/
   sections/               composed page sections (Hero, PageHero, NewsletterForm, ...)
   reactbits/              vendored React Bits components — see below
 lib/                      site config, schema.org builders, utils
-content/                  MDX blog posts, projects, roles, testimonials, media-credits.md
+content/                  MDX blog posts, case studies, roles, testimonials, media-credits.md
 public/logos/             brand artwork — see DESIGN.md §6 (Logo)
 public/media/             optimized video + posters
 ```
@@ -101,7 +101,7 @@ Form submissions go through **Server Actions**, validated server-side. API keys 
 
 ### Content
 
-Blog posts, projects, roles, and testimonials are filesystem content in `content/`, read at build time. Every route statically prerendered. Nothing opts into dynamic rendering without a written reason in the PR.
+Blog posts, case studies, roles, and testimonials are filesystem content in `content/`, read at build time. Every route statically prerendered. Nothing opts into dynamic rendering without a written reason in the PR.
 
 ---
 

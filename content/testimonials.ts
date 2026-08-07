@@ -1,5 +1,5 @@
 /**
- * Client testimonials — Home, and reused on /projects and /hire-us
+ * Client testimonials — Home, and reused on /case-studies and /hire-us
  * (DESIGN.md §11). Three real quotes, shown large and static. Never a carousel.
  *
  * CONTENT INTEGRITY — read before editing (CLAUDE.md):

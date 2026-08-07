@@ -81,7 +81,7 @@ export function Hero() {
             Start a Project
             <Arrow />
           </ButtonLink>
-          <ButtonLink href="/projects" variant="ghostDark" size="hero">
+          <ButtonLink href="/case-studies" variant="ghostDark" size="hero">
             View Case Studies
           </ButtonLink>
         </div>
